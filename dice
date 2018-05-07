@@ -1,0 +1,127 @@
+#!/bin/bash
+
+##Script Author: Eric Goodwin
+##Assignment 2 for CS 2750 Spring Semester 2016
+
+#Specifications: Roll virtual dice by gererating a random number between 1 and 6. 
+#score = sum of 2 random  dice and will range betwen 2 and 12
+#In initialization phase, compute number of times each score can occur.
+#Nested loop for all combinations
+#Intialize score to 0
+#Each loop rolls the dice twice.  
+#If rolls are equal, total reward is zero and game terminates.
+#If score is 4, receive -50 points.  If score is 10, receive -100 points.
+#If not doubles, 4 or 10, scoring is as follows
+#(10 - p(s) x 10 points) P(s) = number of possible ways that you can get the score as determined in the initialization phase.  For example P(2) = 1, P(3) = 2, P(12) = 1).
+#
+#At end of loop, print the score, reward for current iteration, and total reward so far.
+#Ask the user if he wants to continue.  Repeat loop if yes, otherwise terminate script,
+
+PATH=/usr/bin:/usr/bin/bc
+
+## Intilization
+playgame=true ## set to true to ensure at least one loop of the game
+dice1=0
+dice2=0
+roundpoints=0
+totalpoints=0
+##keepplaying=true ##obsolute variable.  used in previous version
+combos[1]=0
+playagain=true ## set to true to ensure keepplaying function runs at least once
+totalroll=0
+
+## Determines possible number of outcomes from a range of 2 to 12 between two dice
+for i in {2..12}
+do
+ for j in {1..6}
+  do
+   for k in {1..6}
+    do
+     if [[ $i -eq `expr $j + $k` ]]
+      then
+       combos[$i]=$((combos[$i]+1))
+      else
+       continue
+     fi
+    done
+  done
+done
+
+## functions
+
+##processroll function processes results of the rolls.  it assigns points based on the roll.
+processroll () {
+ if [[ "$dice1" -eq "$dice2" ]]
+     then 
+     echo "You rolled a double.  Game Over." ; exit 
+elif [[ "$totalroll" -eq "4"  ]]
+     then
+     roundpoints=-50
+     echo "You rolled a four.  You lost 50 points."
+elif [[ "$totalroll" -eq "10" ]]
+     then
+     roundpoints=-100
+     echo "You rolled a 10. You lost 100 points."      
+else
+     roundpoints=`echo "(10 - ${combos[$totalroll]}) * 10" | bc -l`  
+     echo "Congratulations, you've earned $roundpoints points this round."     
+##echo $roundpoints testing purposes only 
+fi
+}
+
+## Function keepplaying.  Keeps the game looping until user selects no when asked
+keepplaying () {
+while [ $playagain = "true" ]
+ do
+  echo "Do you want to play again (yes/no)?"
+  read answer
+    case $answer in
+     y|Y|yes|YES|Yes)
+                 break;;
+     n|N|no|NO|No)
+                 echo "I hope you had fun.  Your finals points: $totalpoints."
+                 exit ;;     
+     *)
+                 echo "Invalid option."
+                 keepplaying ;;
+    esac               
+ done
+
+}
+
+## Function diceroll.  executes the roll of the dice.  creates two random values between 1 and 6 
+diceroll () {
+dice1=$(( $RANDOM % 6 + 1 )); ##echo $dice1 this echo is for testing 
+dice2=$(( $RANDOM % 6 + 1 )); ##echo $dice2 this echo is for testing
+}
+
+
+
+## playmode
+
+while [ $playgame = "true" ]
+ do
+   diceroll
+   echo "Let's play a game."
+   echo "Rolling first dice." 
+    for ((x=0;x<6;x++))
+      do      
+       sleep .2
+       echo -n "."
+      done
+   echo "You rolled a $dice1" 
+   echo "Rolling second dice."
+    for ((x=0;x<6;x++))
+      do 
+       sleep .2
+       echo -n "."
+     done
+   echo "You rolled a $dice2" 
+   totalroll=$((dice1 + dice2))
+   ##echo $totalroll testing purposes only
+   processroll
+   ((totalpoints+=$roundpoints))   
+   ##echo $totalpoints  testing purposes only
+   echo "You have earned $totalpoints points so far." 
+keepplaying
+ done

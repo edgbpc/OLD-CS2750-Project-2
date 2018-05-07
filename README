@@ -1,0 +1,24 @@
+Trial time script
+
+
+No command line options.
+Added echo line to ask the user if they wanted to input tmes
+Added echo line to prompt user the format that trial times should be entered.
+Loop used to enter times also verifies that a float was entered and terminates if not.
+Added echo line to report back average trial time.  
+Formula for computing average allows up to hundreth decimal place.  IE average of 11.5+11.5+11.5+11.5+11.6 = 11.52 and does not make cut.  
+I do not loop my program to continually add runners. 
+
+           ##Not required additions##
+Added code to save the results to a file trial.txt.  Appends a new runner to end of the file for a running list of all runners, their times, and results if they made the team.
+Added code to verify floats entered
+
+#######
+
+dice game script
+
+No command line options
+Added echo lines to make interface seem more like a game.
+Added loops to simulate rolls by adding alternating pauses and echo . lines.
+Kept my code that tests my formulas and loops by commenting them out.
+

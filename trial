@@ -1,0 +1,67 @@
+#!/bin/bash
+
+#Script Author: Eric Goodwin
+#Assignment 2 for CS 2750 Spring Semester 2016
+
+
+#purpose of this script is to determine if a set of trial times qualifies for a place on the Olympic team
+#promt user for name
+#read name
+#verify name is not blank
+#input five trial times
+#average trial times
+#compare to 11.5
+#if trial time less then or equal to 11.5, display "Welcome to the team."
+#if trial time is greater then 11.5 then display "Close, but you did not make the cut."
+
+PATH=/usr/bin/
+mintime=11.5  ## preset minimum time 
+declare -a TIMES
+
+## functions
+
+##getTimes function uses a loop to enter 5 times and verifies in proper format.  script terminates if not in format x.x
+getTimes() {
+for ((x=1; x<=5 ;x++))
+  do
+   echo "Enter time $x."
+   read TIMES[$x]
+   ##echo "test ${TIMES[$x]}" testing purposes only
+     if !  [[ ${TIMES[$x]} =~ ^[[:digit:]]+\.[[:digit:]]$ ]]
+      then
+          echo "Must enter in format x.x.  Please restart program."
+          exit
+     fi
+done
+}
+
+##echo $mintime  ## this line used for testing purposes
+
+echo "Would you like to see if your times qualify you for the Olympic team?"  
+echo "Please enter your name: "
+read runner
+if !  [[ "$runner" =~ [A-Za-z]+ ]]; then 
+   echo "You did not enter a runner."
+   exit
+fi
+
+
+
+echo "Enter your five qualifying times in format x.x x.x x.x x.x x.x" ##prompt provides format to entering times
+getTimes
+IFS='+' average=$(echo "scale=2;(${TIMES[*]})/${#TIMES[@]}" | bc -l) ##this code adds elements of array and then computes average
+
+echo "Your average time is $(printf "%0.3f\n" $average)." ## this line reports the average time and truncates to 3 decimal places.
+
+
+## echo $average ## this line for testing purposes only
+##compares average time to preset minimum time
+if (( $( echo "$average <=  $mintime" | bc -l  ) ))   
+   then 
+   echo "Welcome to the team, $runner."
+   echo "Runner: $runner. Times: ${TIMES[@]}.  Result: Made team." >> trial.txt
+   else
+   echo "Close, $runner, but you did not make the cut."
+   echo "Runner: $runner. Times: ${TIMES[@]}. Result: Did not make team." >> trial.txt
+fi
+
